@@ -1,3 +1,12 @@
+const checkStatus = (response) => {
+    if (response.ok) {
+      return response;
+    }
+    throw new Error('Request was either a 404 or 500');
+}
+  
+const json = (response) => response.json()
+
 class MovieFinder extends React.Component {
     constructor(props) {
         super(props);
@@ -22,6 +31,19 @@ class MovieFinder extends React.Component {
         if (!searchTerm) {
           return;
         }
+      
+        fetch(`https://www.omdbapi.com/?s=${searchTerm}&apikey=5f3dbf65`).then(checkStatus).then(json).then(data => {
+            if (data.Response === 'False') {
+                throw new Error(data.Error);
+            }
+
+            if (data.Response === 'True' && data.Search) {
+                this.setState({ results: data.Search, error: '' })
+            }
+        }).catch(error => {
+            this.setState({ error: error.message });
+            console.log(error);
+        })
       }
 
     render() {
@@ -70,32 +92,8 @@ const Movie = (props) => {
     )
 }
 
-const checkStatus = (response) => {
-    if (response.ok) {
-      // .ok returns true if response status is 200-299
-      return response;
-    }
-    throw new Error('Request was either a 404 or 500');
-  }
+
   
-  const json = (response) => response.json()
-  
-  fetch(`https://www.omdbapi.com/?s=${searchTerm}&apikey=5f3dbf65`)
-    .then(checkStatus)
-    .then(json)
-    .then(data => {
-      if (data.Response === 'False') {
-        throw new Error(data.Error);
-      }
-  
-      if (data.Response === 'True' && data.Search) {
-        this.setState({ results: data.Search, error: '' });
-      }
-    })
-    .catch(error => {
-      this.setState({ error: error.message });
-      console.log(error);
-    })
 
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);

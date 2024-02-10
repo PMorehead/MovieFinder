@@ -1,10 +1,10 @@
 const checkStatus = (response) => {
     if (response.ok) {
-      return response;
+        return response;
     }
     throw new Error('Request was either a 404 or 500');
 }
-  
+
 const json = (response) => response.json();
 
 const Movie = (props) => {
@@ -13,7 +13,7 @@ const Movie = (props) => {
     return (
         <div className="row">
             <div className="col-4 col-md-3 mb-3">
-                <a href={`https://www.imbd.com/title/${imdbID}/`} target="_blank">
+                <a href={`https://www.imdb.com/title/${imdbID}/`} target="_blank">
                     <img src={Poster} className="img-fluid" />
                 </a>
             </div>
@@ -33,7 +33,7 @@ class MovieFinder extends React.Component {
         this.state = {
             searchTerm: '',
             results: [],
-            error: ''
+            error: '',
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -49,25 +49,25 @@ class MovieFinder extends React.Component {
         let { searchTerm } = this.state;
         searchTerm = searchTerm.trim();
         if (!searchTerm) {
-          return;
+            return;
         }
-      
-        fetch(`https://www.omdbapi.com/?s=${searchTerm}&apikey=5f3dbf65`).then(checkStatus).then(json).then(data => {
+
+        fetch(`https://omdbapi.com/?s=${searchTerm}&apikey=5f3dbf65`).then(checkStatus).then(json).then(data => {
             if (data.Response === 'False') {
                 throw new Error(data.Error);
             }
 
-            if (data.Response === 'True' && data.Search) {
-                this.setState({ results: data.Search, error: '' })
+            if (data.Response ==='True' && data.Search) {
+                this.setState({ results: data.Search, error: '' });
             }
-        }).catch(error => {
+        }).catch((error) => {
             this.setState({ error: error.message });
             console.log(error);
         })
-      }
+    }
 
     render() {
-        const { searchTerm, results} = this.state;
+        const { searchTerm, results } = this.state;
 
         return (
             <div className="container">
@@ -82,7 +82,7 @@ class MovieFinder extends React.Component {
                                 return error;
                             }
                             return results.map((movie) => {
-                                return <Movie key={movie.imdbID} movie={movie} />
+                                return <Movie key={movie.imdbID} movie={movie} />;
                             })
                         })()}
                     </div>
@@ -94,4 +94,4 @@ class MovieFinder extends React.Component {
 
 const container = document.getElementById('root');
 const root = ReactDOM.createRoot(container);
-root.render(<MovieFinder />)
+root.render(<MovieFinder />);

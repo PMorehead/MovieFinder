@@ -2,10 +2,10 @@ const checkStatus = (response) => {
   if (response.ok) {
     return response;
   }
-  throw new Error('Request was either a 404 or 505');
+  throw new Error('Request was either a 404 or 500');
 }
 
-const json = (response) => response.json();
+const json = (response) => response.json()
 
 const Movie = (props) => {
   const {
@@ -18,13 +18,13 @@ const Movie = (props) => {
 
   return (
     <div className="row">
-      <div className="col-4 co-md-3 mb-3">
+      <div className="col-4 col-md-3 mb-3">
         <a href={`https://www.imdb.com/title/${imdbID}/`} target="_blank">
           <img src={Poster} className="img-fluid" />
         </a>
       </div>
       <div className="col-8 col-md-9 mb-3">
-      <a href={`https://www.imdb.com/title/${imdbID}/`} target="_blank">
+        <a href={`https://www.imdb.com/title/${imdbID}/`} target="_blank">
           <h4>{Title}</h4>
           <p>{Type} | {Year}</p>
         </a>
@@ -46,26 +46,32 @@ class MovieFinder extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
+  handleChange(event) {
+    this.setState({ searchTerm: event.target.value });
+  }
+
   handleSubmit(event) {
     event.preventDefault();
+    let { searchTerm } = this.state;
     searchTerm = searchTerm.trim();
     if (!searchTerm) {
       return;
     }
 
-    fetch(`https://www.omdbapi.com/?s=${searchTerm}&apikey=5f3dbf65`).then(checkStatus).then(json).then((data) => {
-      if(data.Response === 'False') {
-        throw new Error(data.Error);
-      }
+    fetch(`https://www.omdbapi.com/?s=${searchTerm}&apikey=5f3dbf65`).then(checkStatus).then(json)
+      .then((data) => {
+        if (data.Response === 'False') {
+          throw new Error(data.Error);
+        }
 
-      if (data.Response === 'True' && data.Search) {
-        this.setState({ results: data.Search, error: '' });
-      }
-    })
-    .catch((error) => {
-      this.setState({ error: error.message });
-      console.log(error);
-    })
+        if (data.Response === 'True' && data.Search) {
+          this.setState({ results: data.Search, error: '' });
+        }
+      })
+      .catch((error) => {
+        this.setState({ error: error.message });
+        console.log(error);
+      })
   }
 
   render() {
@@ -76,7 +82,14 @@ class MovieFinder extends React.Component {
         <div className="row">
           <div className="col-12">
             <form onSubmit={this.handleSubmit} className="form-inline my-4">
-              <input type="text" className="form-control mr-sm-2" placeholder="frozen" value={searchTerm} onChange={this.handleChange} />
+              <input
+                type="text"
+                className="form-control mr-sm-2"
+                placeholder="frozen"
+                value={searchTerm}
+                onChange={this.handleChange}
+              />
+              <button type="submit" className="btn btn-primary">Submit</button>
             </form>
             {(() => {
               if (error) {
@@ -85,7 +98,7 @@ class MovieFinder extends React.Component {
               return results.map((movie) => {
                 return <Movie key={movie.imdbID} movie={movie} />;
               })
-            })}
+            })()}
           </div>
         </div>
       </div>
